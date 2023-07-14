@@ -7,14 +7,13 @@ Import-Module ActiveDirectory
 Import-Module MicrosoftTeams
 
 # OU to retrieve users from
-$searchBase = '[Organisational Unit DN]'
+$searchBase = 'OU=Staff,OU=PREBUILT,DC=prebuilt,DC=com,DC=au'
 
 # Log in with Microsoft admin account
 Connect-MicrosoftTeams 
 
 # Fetch all users with Teams numbers from Teams
 $voiceUsers = Get-CsOnlineUser -Filter {EnterpriseVoiceEnabled -eq $True} | Select UserPrincipalName, LineUri
-Write-Host $voiceUsers
 
 # Loop through all fetched users
 # Retrieve the matching AD user
@@ -23,7 +22,6 @@ Write-Host $voiceUsers
 foreach ( $voiceUser in $voiceUsers ) 
 {
     $upn = $voiceUser.UserPrincipalName
-    Write-Host $upn
     try {
         $adUserToUpdate = Get-ADUser -Filter "userPrincipalName -eq '$upn'" -SearchBase $searchBase
         if ($null -eq $adUserToUpdate)
