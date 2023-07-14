@@ -1,4 +1,4 @@
-﻿# Script to synchronise AD user telephone numbers with Teams mobile numbers
+# Script to synchronise AD user telephone numbers with Teams mobile numbers
 #
 # Script adapted by Linus Kay
 # Based on script from: https://goziro.com/how-to-sync-microsoft-teams-phone-numbers-with-active-directory/
@@ -14,6 +14,7 @@ Connect-MicrosoftTeams
 
 # Fetch all users with Teams numbers from Teams
 $voiceUsers = Get-CsOnlineUser -Filter {EnterpriseVoiceEnabled -eq $True} | Select UserPrincipalName, LineUri
+Write-Host $voiceUsers
 
 # Loop through all fetched users
 # Retrieve the matching AD user
@@ -22,8 +23,8 @@ $voiceUsers = Get-CsOnlineUser -Filter {EnterpriseVoiceEnabled -eq $True} | Sele
 foreach ( $voiceUser in $voiceUsers ) 
 {
     $upn = $voiceUser.UserPrincipalName
-    try
-    {
+    Write-Host $upn
+    try {
         $adUserToUpdate = Get-ADUser -Filter "userPrincipalName -eq '$upn'" -SearchBase $searchBase
         if ($null -eq $adUserToUpdate)
         {
@@ -31,7 +32,7 @@ foreach ( $voiceUser in $voiceUsers )
             continue
         }
         $phoneNumber = $voiceUser.LineUri.replace('tel:', '').split(';ext=')[0]
-        #Set-ADUser -Credential $adCredential -Identity $adUserToUpdate.DistinguishedName -Replace @{telephoneNumber=$phoneNumber}
+        Set-ADUser -Identity $adUserToUpdate.DistinguishedName -Replace @{telephoneNumber=$phoneNumber}
         Write-Host "Updated user $upn with phone number $phoneNumber"
     }
     catch
