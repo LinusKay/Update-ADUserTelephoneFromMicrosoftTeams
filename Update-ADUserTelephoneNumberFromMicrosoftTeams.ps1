@@ -7,7 +7,7 @@ Import-Module ActiveDirectory
 Import-Module MicrosoftTeams
 
 # OU to retrieve users from
-$searchBase = 'OU=Staff,OU=PREBUILT,DC=prebuilt,DC=com,DC=au'
+$searchBase = '[Organisational Unit DN]'
 
 # Log in with Microsoft admin account
 Connect-MicrosoftTeams 
